@@ -1,0 +1,70 @@
+import aiml
+
+class TicTacToe:
+    def __init__(self):
+        self.board = [' '] * 9
+        self.current_player = 'X'
+
+    def display_board(self):
+        print(' ' + self.board[0] + ' | ' + self.board[1] + ' | ' + self.board[2])
+        print('---------')
+        print(' ' + self.board[3] + ' | ' + self.board[4] + ' | ' + self.board[5])
+        print('---------')
+        print(' ' + self.board[6] + ' | ' + self.board[7] + ' | ' + self.board[8])
+
+    def is_winner(self, player):
+        win_conditions = [[0, 1, 2], [3, 4, 5], [6, 7, 8], [0, 3, 6], [1, 4, 7], [2, 5, 8], [0, 4, 8], [2, 4, 6]]
+        for condition in win_conditions:
+            if all(self.board[pos] == player for pos in condition):
+                return True
+        return False
+
+    def is_full(self):
+        return ' ' not in self.board
+
+    def make_move(self, position):
+        if self.board[position - 1] == ' ':
+            self.board[position - 1] = self.current_player
+            return True
+        return False
+
+    def switch_player(self):
+        self.current_player = 'X' if self.current_player == 'O' else 'O'
+
+    def play_game(self):
+        ttt_ai = aiml.Kernel()
+        ttt_ai.learn("tic_tac_toe.aiml")
+
+        print("Welcome to Tic-Tac-Toe! You're 'X', and I'm 'O'.")
+        print("Here's the Tic-Tac-Toe board:")
+        self.display_board()
+        print("Enter your move (1-9).")
+
+        while True:
+            player_move = int(input())
+            if self.make_move(player_move):
+                if self.is_winner('X'):
+                    print("Congratulations! You win!")
+                    break
+                elif self.is_full():
+                    print("It's a tie!")
+                    break
+                self.switch_player()
+
+                ai_move = ttt_ai.respond(str(player_move))
+                ai_move = int(ai_move)
+                self.make_move(ai_move)
+
+                if self.is_winner('O'):
+                    print("I win! Better luck next time.")
+                    break
+                elif self.is_full():
+                    print("It's a tie!")
+                    break
+
+            else:
+                print("Invalid move. Try again.")
+
+if __name__ == "__main__":
+    game = TicTacToe()
+    game.play_game()
